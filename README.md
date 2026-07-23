@@ -229,7 +229,5 @@ ContextAI/
 
 *Machine Learning • Retrieval-Augmented Generation • AI Applications*
 
-*If you're a recruiter or professor reading this: the [Evaluation](#-evaluation) section is the part I'd point you to first.*
-
 </div>
 
