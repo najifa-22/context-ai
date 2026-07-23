@@ -57,7 +57,7 @@ ContextAI is the tool I wished I had: upload your papers once, ask a question in
 | **▸ Relevance-Scaled Summaries** | A source with 2 relevant excerpts gets a 2-sentence summary; a source with 15 gets a full paragraph. Nothing important gets compressed into a throwaway line. |
 | **▸ Document Coverage Transparency** | The interface shows how many of your uploaded documents actually contributed to *this specific* answer—an honesty signal most RAG demos skip. |
 | **▸ Persistent Conversational Memory** | Follow-up questions ("who suffers from it?" after "what is aphantasia?") resolve correctly using chat history. |
-| **▸ Evaluation Framework** | A standalone evaluation pipeline that scores the system's answers against a hand-verified question set. See [Evaluation](#evaluation) below. |
+| **▸ Evaluation Framework** | A standalone evaluation pipeline that scores the system's answers against a hand-verified question set. See [Evaluation](#-evaluation) below. |
 
 
 
@@ -92,7 +92,7 @@ The key design decision is that retrieval happens only once. The retrieved chunk
 | **Embeddings** | `sentence-transformers/all-MiniLM-L6-v2` | Lightweight, fast, solid semantic quality for this scale |
 | **Vector store** | FAISS | Simple, in-memory, no external infrastructure required |
 | **PDF parsing** | PyPDF2 | Page-level extraction (needed for citation metadata) |
-| **Evaluation** | Custom LLM-as-judge harness (Groq) | See [Evaluation](#evaluation). |
+| **Evaluation** | Custom LLM-as-judge harness (Groq) | See [Evaluation](#-evaluation) . |
 
 
 
