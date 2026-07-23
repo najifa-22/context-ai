@@ -1,76 +1,37 @@
-# ContextAI
-
-ContextAI is an AI-powered system that allows users to upload multiple PDF files and ask questions in natural language. By combining semantic search, vector embeddings, and Retrieval-Augmented Generation (RAG), the system delivers context-aware answers based on the content of the uploaded documents. Built with LangChain, FAISS, Hugging Face models, and Streamlit, the project demonstrates the practical implementation of modern LLM technologies for intelligent document understanding and information retrieval.
-
-## Features
-
-* Upload multiple PDF documents
-* Automatic text extraction
-* Intelligent text chunking
-* Semantic search using vector embeddings
-* Conversational question answering
-* Retrieval-Augmented Generation (RAG)
-
-## Tech Stack
-
-* Python
-* Streamlit
-* LangChain
-* FAISS
-* Hugging Face Transformers
-* PyPDF2
-
-## Project Workflow
-
-1. Upload PDF documents
-2. Extract text from PDFs
-3. Split text into chunks
-4. Generate embeddings
-5. Store embeddings in FAISS vector database
-6. Retrieve relevant document chunks
-7. Generate answers using an LLM
-
-## Installation
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-## Future Improvements
-
-* Source citations for retrieved document chunks
-* Persistent chat history and conversation storage
-* Support for additional document formats (DOCX, TXT, CSV)
-
 <div align="center">
 
-# 🧠 ContextAI
+# ContextAI
 
-### Ask your documents anything — and actually trust the answer.
+### Ask your documents anything. Actually trust the answer.
 
-*A retrieval-augmented chatbot that doesn't just answer questions from your PDFs — it shows you exactly where each answer came from, and was rigorously evaluated to prove it.*
+*A retrieval-augmented chatbot that doesn't just answer questions across multiple PDFs. It shows you exactly where each answer came from and helps you verify information without manually searching through documents.*
+
+*Backed by an evaluation framework for measuring retrieval quality.*
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-1E1E1E?style=flat-square)
-![FAISS](https://img.shields.io/badge/FAISS-vector%20search-0467DF?style=flat-square)
+![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-0467DF?style=flat-square)
 ![Groq](https://img.shields.io/badge/Groq-Llama%203.3%2070B-F55036?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+![MIT License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+
 
 </div>
 
----
 
-## 📌 Why this project exists
 
-Most "chat with your PDF" projects stop at "it works." ContextAI started as one of those — and then got rebuilt around a harder question: **can I prove it works, and do I know exactly where it fails?**
 
-That question is what separates the two halves of this README: a working multi-document RAG system, and a small but real evaluation study that found — and explains — a genuine weakness in it.
 
----
+## ⬥ Why this project exists
 
-## 📖 Table of Contents
+During my thesis, I'd open twenty tabs just to answer one question like *"What does this paper say about deep learning?"* — jumping between tabs, scrolling page by page, re-reading sections I'd already seen, and hunting for the paragraphs that contained the answers.
+
+ContextAI is the tool I wished I had: upload your papers once, ask a question in plain language, and get a complete answer synthesized from relevant information across all your documents. Every answer is backed by the most relevant source passages and page references, allowing you to explore the original context in detail. 
+
+
+
+
+## ⬥ Table of Contents
 
 - [Key Features](#-key-features)
 - [Architecture](#️-architecture)
@@ -82,153 +43,161 @@ That question is what separates the two halves of this README: a working multi-d
 - [Roadmap](#️-roadmap)
 - [About](#-about)
 
----
 
-## ✨ Key Features
+
+
+
+## ⬥ Key Features
 
 | Feature | What it actually does |
 |---|---|
-| 📄 **Multi-PDF ingestion** | Upload any number of PDFs; each is parsed and chunked independently. |
-| 🎯 **Page-level source attribution** | Every answer is followed by a breakdown of *which PDF, and which page* it drew from — not just "trust me." |
-| 🔀 **Cross-document synthesis** | Ask a question that spans multiple PDFs ("what do both papers agree on?") and get a genuinely synthesized answer, with each contributing source shown separately. |
-| 📏 **Relevance-scaled summaries** | A source with 2 relevant excerpts gets a 2-sentence summary; a source with 15 gets a full paragraph. Nothing important gets compressed into a throwaway line. |
-| 🧾 **"X of Y PDFs relevant" transparency** | The UI tells you how many of your uploaded documents actually contributed to *this specific* answer — an honesty signal most RAG demos skip. |
-| 🧵 **Persistent conversational memory** | Follow-up questions ("who suffers from it?" after "what is aphantasia?") resolve correctly using chat history. |
-| 📊 **Built-in evaluation harness** | A standalone script that scores the system's own answers against a hand-verified question set — see [Evaluation](#-evaluation) below. |
+| **▸ Multi-PDF Ingestion** | Upload any number of PDFs; each is parsed and chunked independently. |
+| **▸ Page-Level Source Attribution** | Every answer is followed by a breakdown of *which PDF, and which page* it drew from—not just a generated answer. |
+| **▸ Cross-Document Synthesis** | Ask a question that spans multiple PDFs ("what do both papers agree on?") and get a genuinely synthesized answer, with each contributing source shown separately. |
+| **▸ Relevance-Scaled Summaries** | A source with 2 relevant excerpts gets a 2-sentence summary; a source with 15 gets a full paragraph. Nothing important gets compressed into a throwaway line. |
+| **▸ Document Coverage Transparency** | The interface shows how many of your uploaded documents actually contributed to *this specific* answer—an honesty signal most RAG demos skip. |
+| **▸ Persistent Conversational Memory** | Follow-up questions ("who suffers from it?" after "what is aphantasia?") resolve correctly using chat history. |
+| **▸ Evaluation Framework** | A standalone evaluation pipeline that scores the system's answers against a hand-verified question set. See [Evaluation](#evaluation) below. |
 
----
 
-## 🏗️ Architecture
+
+## ⬥ Architecture
 
 ```mermaid
 flowchart TD
-    A[📄 User uploads PDFs] --> B[Page-by-page text extraction]
+    A[ User uploads PDFs] --> B[Page-by-page text extraction]
     B --> C[Recursive chunking<br/>+ source & page metadata]
     C --> D[MiniLM embeddings]
     D --> E[(FAISS vector store)]
-    F[💬 User question] --> G[Retriever]
+    F[ User question] --> G[Retriever]
     E --> G
     G --> H[Groq · Llama 3.3 70B<br/>ConversationalRetrievalChain]
     H --> I[Main synthesized answer]
     G --> J[Group retrieved chunks<br/>by source document]
     J --> K[Per-source summary<br/>length scaled to relevance]
-    I --> L[🖥️ Streamlit UI]
+    I --> L[ Streamlit UI]
     K --> L
 ```
 
-The key design decision: retrieval happens **once**, and its results feed two parallel paths — the main synthesized answer, and a per-document breakdown grounded in exactly the chunks that were retrieved for *that* question. Nothing is a static, pre-computed summary.
+The key design decision is that retrieval happens only once. The retrieved chunks then feed two parallel paths: the main synthesized answer and a per-document breakdown grounded in those exact chunks. Nothing is pre-computed, ensuring every response is generated specifically for the current question.
 
----
 
-## 🛠️ Tech Stack
+## ⬥ Tech Stack
 
 | Layer | Choice | Why |
 |---|---|---|
 | **UI** | Streamlit | Fast iteration, native chat components, custom CSS theming |
 | **Orchestration** | LangChain (`langchain-classic` for legacy chains/memory) | `ConversationalRetrievalChain` + `ConversationBufferMemory` |
-| **LLM** | Groq — Llama 3.3 70B Versatile | Fast inference; strong synthesis quality after swapping off `flan-t5-base`, which was too weak for coherent multi-sentence answers |
+| **LLM** | Groq — Llama 3.3 70B Versatile | Fast inference with strong synthesis quality after replacing flan-t5-base, which struggled to generate coherent multi-sentence responses. |
 | **Embeddings** | `sentence-transformers/all-MiniLM-L6-v2` | Lightweight, fast, solid semantic quality for this scale |
-| **Vector store** | FAISS | Simple, in-memory, no external infra needed |
+| **Vector store** | FAISS | Simple, in-memory, no external infrastructure required |
 | **PDF parsing** | PyPDF2 | Page-level extraction (needed for citation metadata) |
-| **Evaluation** | Custom LLM-as-judge harness (Groq) | See below |
+| **Evaluation** | Custom LLM-as-judge harness (Groq) | See [Evaluation](#evaluation). |
 
----
 
-## 📊 Evaluation
 
-Anyone can *demo* a RAG app. Fewer people *measure* one. This project includes a standalone evaluation script (`eval_score.py`) that runs a hand-curated set of 15 questions — 10 single-document, 5 requiring synthesis across both source PDFs — through the live pipeline and scores every answer with an LLM-as-judge on **faithfulness** (is it actually grounded in the source?) and **relevance** (does it answer the question?).
 
-> **Overall: 3.7/5 faithfulness · 4.6/5 relevance** across 15 questions (10 single-document, 5 cross-document).
 
-Evaluated using an LLM-as-judge methodology (Llama 3.3 70B via Groq). Since the judge shares a model family with the system under test, scores should be read as a relative quality signal rather than an absolute benchmark.
+## ⬥ Evaluation
+
+Building a RAG system is one thing. Measuring how well it retrieves and reasons is another.
+
+This repository includes a standalone evaluation pipeline that runs a hand-curated set of 15 questions through the complete RAG workflow and scores every generated answer using an LLM-as-judge methodology. The evaluation covers **10 single-document questions** and **5 cross-document reasoning questions**, measuring two complementary metrics:
+
+- **Faithfulness** — Is the answer grounded in the retrieved source passages?
+- **Relevance** — Does the answer correctly address the user's question?
+
+> **Overall Performance**
+>
+> **Faithfulness:** 3.7 / 5  
+> **Relevance:** 4.6 / 5
+
+Because the evaluator uses the same model family (Llama 3.3 70B via Groq) as the system under test, these scores should be interpreted as a **relative quality signal rather than an absolute benchmark.**
 
 | Category | Faithfulness | Relevance | Count |
 |---|:---:|:---:|:---:|
-| All questions | 3.7/5 | 4.6/5 | 15 |
-| Single-document | **4.4/5** | **5.0/5** | 10 |
-| Cross-document (multi-PDF reasoning) | **2.4/5** | 3.8/5 | 5 |
+| All questions | **3.7 / 5** | **4.6 / 5** | 15 |
+| Single-document retrieval | **4.4 / 5** | **5.0 / 5** | 10 |
+| Cross-document reasoning | **2.4 / 5** | **3.8 / 5** | 5 |
 
 <details>
 <summary><strong>Full per-question breakdown</strong> (click to expand)</summary>
 
 | # | Question | Type | Faithfulness | Relevance |
 |---|---|:---:|:---:|:---:|
-| 1 | What is aphantasia and how does it affect people's experience of visual imagery? | Single-doc | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 2 | How did the researchers measure sensory imagery in people with aphantasia? | Single-doc | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
-| 3 | Why is the study of visual imagery important, and what are its implications? | Single-doc | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
-| 4 | How does the concept of aphantasia relate to the historical debate about the nature of visual imagery? | Single-doc | ⭐⭐⭐☆☆ | ⭐⭐⭐⭐⭐ |
-| 5 | What do the findings of this study suggest about the underlying neurological cause of aphantasia? | Single-doc | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
-| 6 | What is aphantasia and how does it affect individuals? | Single-doc | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 7 | Why is the study of aphantasia important for understanding visual cognition? | Single-doc | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 8 | How did the aphantasic individual perform on visual working memory trials vs. controls? | Single-doc | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 9 | What can be inferred about mental imagery's role in visual working memory? | Single-doc | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
-| 10 | How does the aphantasic individual's imagery-task performance compare to controls? | Single-doc | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| 11 | What do both papers agree on regarding aphantasia? | Cross-doc | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐☆ |
-| 12 | How do the two studies investigate aphantasia differently? | Cross-doc | ⭐⭐☆☆☆ | ⭐⭐⭐⭐☆ |
-| 13 | What evidence from both papers supports aphantasia as a real phenomenon? | Cross-doc | ⭐⭐☆☆☆ | ⭐⭐⭐⭐☆ |
-| 14 | Which paper uses a larger/more diverse participant group, and why might that matter? | Cross-doc | ⭐⭐☆☆☆ | ⭐⭐⭐⭐☆ |
-| 15 | If someone read only one of these two papers, what would they be missing? | Cross-doc | ⭐⭐☆☆☆ | ⭐⭐⭐☆☆ |
+| 1 | What is aphantasia and how does it affect people's experience of visual imagery? | Single | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 2 | How did the researchers measure sensory imagery in people with aphantasia? | Single | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
+| 3 | Why is the study of visual imagery important, and what are its implications? | Single | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
+| 4 | How does the concept of aphantasia relate to the historical debate about the nature of visual imagery? | Single | ⭐⭐⭐☆☆ | ⭐⭐⭐⭐⭐ |
+| 5 | What do the findings of this study suggest about the underlying neurological cause of aphantasia? | Single | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
+| 6 | What is aphantasia and how does it affect individuals? | Single | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 7 | Why is the study of aphantasia important for understanding visual cognition? | Single | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 8 | How did the aphantasic individual perform on visual working memory trials vs. controls? | Single | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 9 | What can be inferred about mental imagery's role in visual working memory? | Single | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐⭐ |
+| 10 | How does the aphantasic individual's imagery-task performance compare to controls? | Single | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 11 | What do both papers agree on regarding aphantasia? | Cross | ⭐⭐⭐⭐☆ | ⭐⭐⭐⭐☆ |
+| 12 | How do the two studies investigate aphantasia differently? | Cross | ⭐⭐☆☆☆ | ⭐⭐⭐⭐☆ |
+| 13 | What evidence from both papers supports aphantasia as a real phenomenon? | Cross | ⭐⭐☆☆☆ | ⭐⭐⭐⭐☆ |
+| 14 | Which paper uses a larger/more diverse participant group, and why might that matter? | Cross | ⭐⭐☆☆☆ | ⭐⭐⭐⭐☆ |
+| 15 | If someone read only one of these two papers, what would they be missing? | Cross | ⭐⭐☆☆☆ | ⭐⭐⭐☆☆ |
 
 </details>
 
-### 🔍 What the evaluation actually found
+### Key Findings
 
-The gap between single-document (4.4/5) and cross-document (2.4/5) faithfulness is not noise — it's a consistent, explainable pattern. Manual review of the low-scoring cross-document answers shows the model occasionally **fabricates specific figures or comparisons** (e.g. invented sample sizes) when it's under pressure to *synthesize* across two retrieved sets of chunks, rather than simply *report* from one. This is a well-known RAG failure mode, and finding it — rather than shipping a system that merely *looked* like it worked — is the actual point of building an evaluation harness in the first place.
+The gap between single-document retrieval(4.4/5) and cross-document reasoning(2.4/5) faithfulness is not noise — it's a consistent, explainable pattern. Manual review of the low-scoring cross-document answers shows the model occasionally **fabricates specific figures or comparisons** (e.g. invented sample sizes) when when required to synthesize information across multiple retrieved sources, rather than simply report information from a single document. 
 
-**Next step to address it:** a stricter grounding prompt for cross-document questions, and/or a lightweight verification pass that checks multi-source answers against the retrieved chunks before returning them.
+This is a well-known RAG failure mode, and identifying it—rather than stopping once the system produced plausible answers—is precisely why the evaluation framework was built.
 
----
+### Next Steps
 
-## 🔧 Engineering Journey — Problems Actually Solved
+- Strengthen prompting for cross-document synthesis to encourage stricter grounding.
+- Introduce a lightweight verification pass that checks multi-source answers against the retrieved chunks before returning them.
+- Expand the evaluation dataset with additional documents and more diverse multi-hop reasoning questions.
 
-A running list of real issues hit and fixed during development — because "it works" hides all the interesting parts:
 
-- **`ModuleNotFoundError: langchain.memory`** — the installed LangChain was actually v1.x despite a stale `requirements.txt` pinning 0.1.20; legacy memory/chains had moved to the separate `langchain-classic` package. Diagnosed via the *other* installed package versions, not just the error message.
-- **`ValueError: Got multiple output keys`** — enabling `return_source_documents=True` broke `ConversationBufferMemory`'s ability to infer which output was "the answer"; fixed by setting `output_key='answer'` explicitly.
-- **LLM quality bottleneck** — `google/flan-t5-base` produced single-word, non-sentence answers no matter how the prompt was tuned. Root cause was model capacity, not prompting — solved by swapping to Groq's Llama 3.3 70B.
-- **Groq TPM rate limits (413 errors)** — free-tier token-per-minute caps were exceeded sending full PDF text per request; fixed by capping prompt input length per request.
-- **Non-deterministic JSON output from the LLM** — structured generation (Q&A pair creation, judge scoring) occasionally returned malformed JSON; solved with a retry loop (up to 3 attempts) rather than crashing the whole batch on one bad response.
-- **Windows `0xC0000005` access violation** — a native crash loading the embedding model locally, traced to a PyTorch/FAISS/OpenMP conflict common on Windows. After multiple mitigation attempts (env vars, thread limits, bypassing the LangChain wrapper), the reliable fix was moving the evaluation run to a clean Linux environment (Google Colab) rather than continuing to fight a Windows-specific binary conflict.
-- **Stale `st.rerun()` UI state** — the Process button's label didn't update until an unrelated rerun occurred; fixed with an explicit session-state flag forcing a rerun immediately after processing completes.
 
----
-
-## 🚀 Getting Started
+## ⬥ Getting Started
 
 ```bash
-# 1. Clone and enter the project
-git clone <your-repo-url>
+# Clone the repository
+git clone https://github.com/najifa-22/context-ai.git
 cd ContextAI
 
-# 2. Create and activate a virtual environment
+# Create and activate a virtual environment
 python -m venv venv
 venv\Scripts\activate      # Windows
 source venv/bin/activate   # macOS/Linux
 
-# 3. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 4. Add your Groq API key
-echo GROQ_API_KEY=your-key-here > .env
+# Create a `.env` file in the project root
 
-# 5. Run the app
+# Add your Groq API key in `.env`
+GROQ_API_KEY=your_api_key_here
+
+# Run the application:
 streamlit run app.py
 ```
 
-### Running the evaluation suite
+### Running the Evaluation
 
 ```bash
-# (Optional) generate a fresh Q&A eval set from your own PDFs
+# Generate a new evaluation question set (optional):
 python generate_eval_set.py
 
-# Score the live pipeline against eval_set.json
+# Evaluate the complete RAG pipeline:
 python eval_score.py
 ```
-> ⚠️ On Windows, local embedding generation may hit a PyTorch/OpenMP native crash. If it does, run `eval_score.py` in a clean environment (e.g. Google Colab) instead of debugging Windows binary conflicts.
+
+> **Note:** On some Windows systems, local embedding generation may trigger a PyTorch/OpenMP native library conflict. If this occurs, run `eval_score.py` in a clean environment (e.g. Google Colab) instead of debugging Windows binary conflicts.
+
 
 ---
 
-## 📁 Project Structure
+
+## ⬥ Project Structure
 
 ```
 ContextAI/
@@ -243,25 +212,22 @@ ContextAI/
 └── .env                    # GROQ_API_KEY (not committed)
 ```
 
----
 
-## 🗺️ Roadmap
+## ⬥ Roadmap
 
-- [ ] Tighter grounding prompt for cross-document questions (directly targets the 2.4/5 faithfulness gap found in evaluation)
-- [ ] Hybrid search (FAISS dense + BM25 sparse retrieval)
-- [ ] Cross-encoder reranking on top of initial retrieval
-- [ ] Migrate off deprecated `langchain-classic` chains to LCEL / LangGraph
-- [ ] Persistent vector store (Chroma/Qdrant) instead of session-only FAISS
+-  Improve cross-document grounding to address the faithfulness gap identified during evaluation.
+-  Add hybrid retrieval (FAISS + BM25).
+-  Introduce cross-encoder reranking for more accurate retrieval.
+-  Migrate from legacy LangChain chains to LCEL / LangGraph.
+-  Support persistent vector stores (Chroma or Qdrant).
 
----
-
-## 🎓 About
-
-Built by a CSE graduate (2024) as a deep, evaluated exploration of retrieval-augmented generation — going beyond a working demo to measure, document, and honestly report where the system succeeds and where it doesn't.
 
 ---
+## Author
 
-<div align="center">
+**Najifa Tasnim**
+
+*Machine Learning • Retrieval-Augmented Generation • AI Applications*
 
 *If you're a recruiter or professor reading this: the [Evaluation](#-evaluation) section is the part I'd point you to first.*
 
