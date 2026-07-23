@@ -37,11 +37,9 @@ ContextAI is the tool I wished I had: upload your papers once, ask a question in
 - [Architecture](#️-architecture)
 - [Tech Stack](#️-tech-stack)
 - [Evaluation](#-evaluation)
-- [Engineering Journey](#-engineering-journey--problems-actually-solved)
 - [Getting Started](#-getting-started)
 - [Project Structure](#-project-structure)
 - [Roadmap](#️-roadmap)
-- [About](#-about)
 
 
 
